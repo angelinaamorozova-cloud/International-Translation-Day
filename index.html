@@ -4,10 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="День переводчика">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#00F5FF">
 <meta name="format-detection" content="telephone=no">
 <title>День переводчика — Викторина</title>
+
+<!-- ✅ СТРОГАЯ ПРИВЯЗКА К ВАШЕМУ ФАЙЛУ icon.jpg -->
+<link rel="icon" type="image/jpeg" href="icon.jpg">
+<link rel="shortcut icon" type="image/jpeg" href="icon.jpg">
+<link rel="apple-touch-icon" href="icon.jpg">
+<link rel="apple-touch-icon-precomposed" href="icon.jpg">
+<link rel="manifest" href="manifest.json">
 
 <style>
 :root {
@@ -350,7 +359,7 @@ body {
   transition: opacity 0.2s ease;
 }
 .answer-card.correct::after { content: '✓'; color: var(--color-correct); opacity: 1; }
-.answer-card.incorrect::after { content: ''; color: var(--color-incorrect); opacity: 1; }
+.answer-card.incorrect::after { content: '✗'; color: var(--color-incorrect); opacity: 1; }
 
 .explanation {
   margin-top: 14px;
@@ -653,6 +662,10 @@ body {
 </audio>
 
 <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
 function shuffleArray(array) {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -1002,12 +1015,12 @@ const questions = [
     phrase: "False friends of the translator",
     options: [
       "Слова, которые похожи в разных языках, но имеют разные значения",
-      "Коллеги, которые подставляют в дедлайн",
+      "Слова, которые переводчик узнает мгновенно, а их значение — только после словаря",
       "Google-переводчик",
-      "Заказчики, которые после получения срочного перевода присылают обновлённую версию"
+      "Игра слов — когда автор уже пошутил, а переводчику только предстоит придумать, как эту шутку передать"
     ],
     correctIndex: 0,
-    explanation: "«Ложные друзья переводчика» (false friends) — это слова в разных языках, которые похожи по звучанию или написанию, но имеют совершенно разное значение. Классические примеры: англ. 'magazine' (журнал, а не магазин), 'sympathetic' (сочувствующий, а не симпатичный), 'accurate' (точный, а не аккуратный). Остальные варианты — это, конечно, тоже настоящие «ложные друзья» в жизни любого переводчика, но к лингвистическому термину они не относятся!"
+    explanation: "«Ложные друзья переводчика» (false friends) — это слова в разных языках, которые похожи по звучанию или написанию, но имеют совершенно разное значение. Классические примеры: англ. 'magazine' (журнал, а не магазин), 'sympathetic' (сочувствующий, а не симпатичный), 'accurate' (точный, а не аккуратный). Остальные варианты — это, конечно, тоже знакомые боли любого переводчика, но к лингвистическому термину они не относятся!"
   }
 ];
 
