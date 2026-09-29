@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#00F5FF">
+<meta name="format-detection" content="telephone=no">
+<title>День переводчика — Викторина</title>
+
+<style>
+:root {
+  --color-turquoise: #00F5FF;
+  --color-turquoise-dark: #00C8D6;
+  --color-primary: #6C5CE7;
+  --color-bg: #0F0E17;
+  --color-bg-soft: rgba(26, 25, 38, 0.95);
+  --color-text: #FFFFFE;
+  --color-text-light: #A7A9BE;
+  --color-correct: #00F5A0;
+  --color-incorrect: #FF6B6B;
+  --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+html {
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  padding-top: calc(10px + var(--safe-top));
+  padding-bottom: calc(10px + var(--safe-bottom));
+  line-height: 1.4;
+  background: linear-gradient(135deg, #0a1628 0%, #050d1a 100%);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+#animated-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.quiz-container {
+  width: 100%;
+  max-width: 560px;
+  height: calc(100vh - 20px);
+  height: calc(100dvh - 20px);
+  max-height: calc(100vh - 20px);
+  max-height: calc(100dvh - 20px);
+  background: var(--color-bg-soft);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(108, 92, 231, 0.4);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 30px rgba(108, 92, 231, 0.3);
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen {
+  display: none;
+  width: 100%;
+  height: 100%;
+  animation: fadeIn 0.5s ease;
+}
+.screen.active {
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+#welcome-screen { padding: 0; background: #000; }
+
+.welcome-header {
+  padding: 16px 16px 10px;
+  padding-top: calc(16px + var(--safe-top));
+  text-align: center;
+  flex-shrink: 0;
+  background: var(--color-bg-soft);
+  z-index: 2;
+}
+
+.welcome-title {
+  font-size: clamp(20px, 4vw, 26px);
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--color-turquoise);
+  text-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+}
+
+.welcome-text {
+  color: var(--color-text-light);
+  font-size: clamp(11px, 2.3vw, 13px);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.welcome-text .nowrap {
+  white-space: nowrap;
+}
+
+@media (max-width: 400px) {
+  .welcome-text .nowrap {
+    white-space: normal;
+  }
+}
+
+.intro-video-wrap {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.intro-video-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+}
+
+.btn-start-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  padding: clamp(14px, 3vw, 18px) clamp(24px, 5vw, 32px);
+  font-size: clamp(14px, 3vw, 18px);
+  font-weight: 800;
+  color: var(--color-turquoise);
+  background: rgba(0, 245, 255, 0.1);
+  border: 1px solid rgba(0, 245, 255, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+  font-family: var(--font-main);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.3), inset 0 0 15px rgba(0, 245, 255, 0.1);
+  animation: pulseGlow 2.5s infinite, morphShape 5s ease-in-out infinite;
+  transition: all 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.btn-start-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.btn-start-overlay:active {
+  background: rgba(0, 245, 255, 0.25);
+  box-shadow: 0 0 35px rgba(0, 245, 255, 0.6), inset 0 0 20px rgba(0, 245, 255, 0.2);
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+@keyframes pulseGlow {
+  0%   { box-shadow: 0 0 0 0 rgba(0, 245, 255, 0.6), inset 0 0 15px rgba(0, 245, 255, 0.1); }
+  70%  { box-shadow: 0 0 0 15px rgba(0, 245, 255, 0), inset 0 0 15px rgba(0, 245, 255, 0.1); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 245, 255, 0), inset 0 0 15px rgba(0, 245, 255, 0.1); }
+}
+
+@keyframes morphShape {
+  0%   { border-radius: 16px; }
+  25%  { border-radius: 30px 16px 30px 16px; }
+  50%  { border-radius: 50px; }
+  75%  { border-radius: 16px 30px 16px 30px; }
+  100% { border-radius: 16px; }
+}
+
+#quiz-screen {
+  padding: 16px;
+  padding-top: calc(16px + var(--safe-top));
+  padding-bottom: calc(16px + var(--safe-bottom));
+  position: relative;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--color-bg-soft);
+}
+
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  font-size: clamp(11px, 2.5vw, 13px);
+  color: var(--color-text-light);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.score-display {
+  font-size: clamp(16px, 3.5vw, 20px);
+  font-weight: 800;
+  color: var(--color-turquoise);
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  margin: 0 10px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-turquoise));
+  border-radius: 999px;
+  width: 0%;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px var(--color-turquoise);
+}
+
+.question-text {
+  font-size: clamp(16px, 3.5vw, 18px);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 6px;
+  color: var(--color-text);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+}
+
+.question-phrase {
+  display: block;
+  font-size: clamp(18px, 4vw, 22px);
+  font-weight: 800;
+  color: var(--color-turquoise);
+  margin: 10px 0 6px;
+  text-align: center;
+  text-shadow: 0 0 15px rgba(0, 245, 255, 0.4);
+  font-style: italic;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.question-phrase:active { transform: scale(0.98); }
+
+.speak-hint {
+  display: block;
+  text-align: center;
+  font-size: clamp(10px, 2vw, 12px);
+  color: var(--color-text-light);
+  margin-bottom: 14px;
+  opacity: 0.7;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+}
+
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+.answer-card {
+  background: rgba(35, 33, 54, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: clamp(12px, 2.5vw, 16px);
+  font-size: clamp(14px, 3vw, 16px);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  font-family: var(--font-main);
+  position: relative;
+  touch-action: manipulation;
+  backdrop-filter: blur(4px);
+}
+
+.answer-card:active:not(.disabled) {
+  transform: scale(0.98);
+  border-color: var(--color-turquoise);
+}
+
+.answer-card.correct {
+  background: rgba(0, 245, 160, 0.15);
+  border-color: var(--color-correct);
+  box-shadow: 0 0 15px rgba(0, 245, 160, 0.3);
+}
+
+.answer-card.incorrect {
+  background: rgba(255, 107, 107, 0.15);
+  border-color: var(--color-incorrect);
+  box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
+}
+
+.answer-card.disabled { cursor: default; opacity: 0.7; }
+
+.answer-card::after {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  font-weight: 900;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.answer-card.correct::after { content: '✓'; color: var(--color-correct); opacity: 1; }
+.answer-card.incorrect::after { content: ''; color: var(--color-incorrect); opacity: 1; }
+
+.explanation {
+  margin-top: 14px;
+  padding: 12px;
+  background: rgba(108, 92, 231, 0.12);
+  border-left: 3px solid var(--color-turquoise);
+  border-radius: 10px;
+  font-size: clamp(13px, 2.8vw, 15px);
+  color: var(--color-text);
+  animation: fadeIn 0.3s ease;
+  display: none;
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
+}
+.explanation.show { display: block; }
+
+.btn-next {
+  margin-top: 14px;
+  width: 100%;
+  padding: 14px;
+  padding-bottom: calc(14px + var(--safe-bottom));
+  font-size: clamp(14px, 3vw, 16px);
+  font-weight: 700;
+  color: var(--color-bg);
+  background: linear-gradient(90deg, var(--color-turquoise), var(--color-turquoise-dark));
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: none;
+  font-family: var(--font-main);
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+.btn-next.show { display: block; }
+.btn-next:active { transform: scale(0.98); }
+
+#result-screen {
+  padding: 16px;
+  padding-top: calc(16px + var(--safe-top));
+  padding-bottom: calc(16px + var(--safe-bottom));
+  overflow: hidden;
+}
+
+.result-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.result-score {
+  text-align: center;
+  font-size: clamp(32px, 7vw, 42px);
+  font-weight: 900;
+  background: linear-gradient(90deg, var(--color-turquoise), var(--color-turquoise-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+
+.result-title {
+  text-align: center;
+  font-size: clamp(16px, 3.5vw, 20px);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.result-text {
+  text-align: center;
+  color: var(--color-text-light);
+  margin-bottom: 10px;
+  font-size: clamp(12px, 2.8vw, 14px);
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.congrats-block {
+  background: linear-gradient(135deg, rgba(0, 245, 255, 0.15), rgba(108, 92, 231, 0.2));
+  border: 1px solid rgba(0, 245, 255, 0.4);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  text-align: center;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+.congrats-block .congrats-title {
+  font-size: clamp(14px, 3vw, 16px);
+  font-weight: 700;
+  color: var(--color-turquoise);
+  margin-bottom: 8px;
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.4);
+}
+.congrats-block .congrats-text {
+  color: var(--color-text);
+  font-size: clamp(12px, 2.5vw, 14px);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.congrats-block .congrats-wish {
+  color: var(--color-text-light);
+  font-size: clamp(11px, 2.3vw, 13px);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.outro-video-wrap {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(108, 92, 231, 0.5);
+  box-shadow: 0 0 25px rgba(108, 92, 231, 0.3);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #000;
+}
+.outro-video-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+}
+
+.contact-block {
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.2), rgba(0, 245, 255, 0.1));
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  text-align: center;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+.contact-block p {
+  color: var(--color-text);
+  margin-bottom: 4px;
+  font-size: clamp(12px, 2.5vw, 14px);
+  line-height: 1.4;
+  font-weight: 600;
+}
+.contact-block .org-name {
+  color: var(--color-turquoise);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.contact-block a {
+  color: var(--color-turquoise);
+  text-decoration: none;
+  font-size: clamp(11px, 2.3vw, 13px);
+  display: block;
+  padding: 2px 0;
+  word-break: break-all;
+}
+.contact-block a:hover { 
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+.btn-restart {
+  width: 100%;
+  padding: 14px;
+  padding-bottom: calc(14px + var(--safe-bottom));
+  font-size: clamp(13px, 3vw, 16px);
+  font-weight: 800;
+  color: var(--color-turquoise);
+  background: rgba(0, 245, 255, 0.1);
+  border: 1px solid rgba(0, 245, 255, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: var(--font-main);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.3), inset 0 0 15px rgba(0, 245, 255, 0.1);
+  animation: pulseGlow 2.5s infinite, morphShape 5s ease-in-out infinite;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+.btn-restart:active {
+  transform: scale(0.98);
+  background: rgba(0, 245, 255, 0.25);
+}
+
+@media (max-width: 380px) {
+  body { padding: 8px; }
+  .welcome-header { padding: 12px 12px 8px; }
+  #quiz-screen, #result-screen { padding: 12px; }
+  .answers { gap: 8px; }
+  .answer-card { padding: 10px 12px; }
+}
+
+@media (min-height: 800px) {
+  .outro-video-wrap { max-height: 40vh; }
+}
+
+@media (max-height: 600px) {
+  .welcome-header { padding: 10px 12px 6px; }
+  .welcome-title { font-size: 18px; margin-bottom: 4px; }
+  .welcome-text { font-size: 11px; }
+  .outro-video-wrap { max-height: 30vh; }
+  .result-score { font-size: 28px; }
+  .result-title { font-size: 16px; }
+  .result-text { font-size: 12px; margin-bottom: 6px; }
+  .contact-block { padding: 10px 12px; }
+  .congrats-block { padding: 10px 12px; }
+}
+
+@media (min-width: 768px) {
+  body { padding: 20px; }
+  .quiz-container { max-width: 600px; height: 90vh; max-height: 800px; }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="animated-bg"></canvas>
+
+<div class="quiz-container">
+
+  <div class="screen active" id="welcome-screen">
+    <div class="welcome-header">
+      <h1 class="welcome-title">День переводчика</h1>
+      <p class="welcome-text">
+        30 сентября мир отмечает Международный день переводчика.<br>
+        <span class="nowrap">Проверь, насколько хорошо ты знаешь историю, культуру и секреты профессии!</span><br>
+        10 вопросов — 10 шансов стать настоящим знатоком.
+      </p>
+    </div>
+
+    <div class="intro-video-wrap">
+      <video id="intro-video" autoplay playsinline muted preload="auto">
+        <source src="intro.mp4" type="video/mp4">
+      </video>
+      <button class="btn-start-overlay" id="btn-start">Начать игру</button>
+    </div>
+  </div>
+
+  <div class="screen" id="quiz-screen">
+    <div class="progress-wrap">
+      <span id="progress-label">Вопрос 1 / 10</span>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <span class="score-display" id="score-label">0 / 10</span>
+    </div>
+
+    <h2 class="question-text" id="question-text">Вопрос?</h2>
+    <div class="question-phrase" id="question-phrase"></div>
+    <span class="speak-hint">Нажмите на фразу, чтобы прослушать</span>
+
+    <div class="answers" id="answers"></div>
+    <div class="explanation" id="explanation"></div>
+    <button class="btn-next" id="btn-next">Далее</button>
+  </div>
+
+  <div class="screen" id="result-screen">
+    <div class="result-content">
+      <div class="result-score" id="result-score">0 / 10</div>
+      <h2 class="result-title" id="result-title">Ты начинающий переводчик</h2>
+      <p class="result-text" id="result-text">Текст результата.</p>
+
+      <div class="outro-video-wrap">
+        <video id="outro-video" playsinline preload="auto" loop muted disableRemotePlayback>
+          <source src="outro.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <div class="congrats-block">
+        <div class="congrats-title">🎉 С Днём переводчика!</div>
+        <p class="congrats-text">Поздравляем всех, кто связал свою жизнь с миром перевода! Вы — мост между культурами, голос разных народов и хранители смысла.</p>
+        <p class="congrats-wish">Желаем вам вдохновения в каждом тексте, точности в каждом слове, интересных проектов и довольных заказчиков. Пусть язык никогда не станет для вас преградой, а всегда будет инструментом творчества!</p>
+      </div>
+
+      <div class="contact-block">
+        <p>По всем интересующим вопросам обращайтесь в</p>
+        <p class="org-name">Отдел переводов ООО "МКС"</p>
+        <a href="mailto:perevod@mks.metalloinvest.com">perevod@mks.metalloinvest.com</a>
+      </div>
+    </div>
+
+    <button class="btn-restart" id="btn-restart">Пройти ещё раз</button>
+  </div>
+
+</div>
+
+<audio id="intro-voice" preload="auto">
+  <source src="intro-voice.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+const bgCanvas = document.getElementById('animated-bg');
+const bgCtx = bgCanvas.getContext('2d');
+
+function resizeBgCanvas() {
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+}
+resizeBgCanvas();
+window.addEventListener('resize', resizeBgCanvas);
+
+const flyingWords = [
+  { text: "翻译", lang: "zh" }, { text: "语言", lang: "zh" }, { text: "文字", lang: "zh" },
+  { text: "词汇", lang: "zh" }, { text: "语法", lang: "zh" }, { text: "表达", lang: "zh" },
+  { text: "意思", lang: "zh" }, { text: "理解", lang: "zh" }, { text: "沟通", lang: "zh" },
+  { text: "交流", lang: "zh" }, { text: "文化", lang: "zh" }, { text: "历史", lang: "zh" },
+  { text: "文学", lang: "zh" }, { text: "诗歌", lang: "zh" }, { text: "小说", lang: "zh" },
+  { text: "故事", lang: "zh" }, { text: "对话", lang: "zh" }, { text: "演讲", lang: "zh" },
+  { text: "会议", lang: "zh" }, { text: "商务", lang: "zh" }, { text: "技术", lang: "zh" },
+  { text: "科学", lang: "zh" }, { text: "艺术", lang: "zh" }, { text: "音乐", lang: "zh" },
+  { text: "电影", lang: "zh" }, { text: "新闻", lang: "zh" }, { text: "媒体", lang: "zh" },
+  { text: "网络", lang: "zh" }, { text: "信息", lang: "zh" }, { text: "知识", lang: "zh" },
+  { text: "学习", lang: "zh" }, { text: "教育", lang: "zh" }, { text: "研究", lang: "zh" },
+  { text: "发展", lang: "zh" }, { text: "创新", lang: "zh" }, { text: "创造", lang: "zh" },
+  { text: "想象", lang: "zh" }, { text: "思维", lang: "zh" }, { text: "智慧", lang: "zh" },
+  { text: "思想", lang: "zh" }, { text: "哲学", lang: "zh" }, { text: "逻辑", lang: "zh" },
+  { text: "真理", lang: "zh" }, { text: "美丽", lang: "zh" }, { text: "和谐", lang: "zh" },
+  { text: "和平", lang: "zh" }, { text: "友谊", lang: "zh" }, { text: "爱情", lang: "zh" },
+  { text: "家庭", lang: "zh" }, { text: "生活", lang: "zh" }, { text: "工作", lang: "zh" },
+  { text: "成功", lang: "zh" }, { text: "梦想", lang: "zh" }, { text: "希望", lang: "zh" },
+  { text: "未来", lang: "zh" }, { text: "世界", lang: "zh" }, { text: "地球", lang: "zh" },
+  { text: "自然", lang: "zh" }, { text: "宇宙", lang: "zh" }, { text: "时间", lang: "zh" },
+  { text: "空间", lang: "zh" }, { text: "变化", lang: "zh" }, { text: "进步", lang: "zh" },
+  { text: "传统", lang: "zh" }, { text: "现代", lang: "zh" }, { text: "经典", lang: "zh" },
+  { text: "专业", lang: "zh" }, { text: "技能", lang: "zh" }, { text: "经验", lang: "zh" },
+  { text: "实践", lang: "zh" }, { text: "理论", lang: "zh" }, { text: "方法", lang: "zh" },
+  { text: "系统", lang: "zh" }, { text: "标准", lang: "zh" }, { text: "质量", lang: "zh" },
+  { text: "效率", lang: "zh" }, { text: "精确", lang: "zh" }, { text: "准确", lang: "zh" },
+  { text: "完整", lang: "zh" }, { text: "清晰", lang: "zh" }, { text: "简洁", lang: "zh" },
+  { text: "优雅", lang: "zh" }, { text: "流畅", lang: "zh" }, { text: "生动", lang: "zh" },
+  { text: "形象", lang: "zh" }, { text: "深刻", lang: "zh" }, { text: "丰富", lang: "zh" },
+  { text: "多样", lang: "zh" }, { text: "独特", lang: "zh" }, { text: "特别", lang: "zh" },
+  { text: "重要", lang: "zh" }, { text: "关键", lang: "zh" }, { text: "核心", lang: "zh" },
+  { text: "基础", lang: "zh" }, { text: "本质", lang: "zh" }, { text: "意义", lang: "zh" },
+  { text: "价值", lang: "zh" }, { text: "目标", lang: "zh" }, { text: "方向", lang: "zh" },
+  { text: "道路", lang: "zh" }, { text: "旅程", lang: "zh" }, { text: "探索", lang: "zh" },
+  { text: "发现", lang: "zh" }, { text: "建设", lang: "zh" }, { text: "成长", lang: "zh" },
+  { text: "提升", lang: "zh" }, { text: "改进", lang: "zh" }, { text: "优化", lang: "zh" },
+  { text: "完善", lang: "zh" }, { text: "卓越", lang: "zh" }, { text: "完美", lang: "zh" },
+  { text: "优秀", lang: "zh" }, { text: "杰出", lang: "zh" }, { text: "非凡", lang: "zh" },
+  { text: "перевод", lang: "ru" }, { text: "язык", lang: "ru" }, { text: "слово", lang: "ru" },
+  { text: "смысл", lang: "ru" }, { text: "текст", lang: "ru" }, { text: "речь", lang: "ru" },
+  { text: "буква", lang: "ru" }, { text: "фраза", lang: "ru" }, { text: "диалог", lang: "ru" },
+  { text: "переводчик", lang: "ru" }, { text: "толмач", lang: "ru" }, { text: "интерпретация", lang: "ru" },
+  { text: "адаптация", lang: "ru" }, { text: "локализация", lang: "ru" }, { text: "редактура", lang: "ru" },
+  { text: "вычитка", lang: "ru" }, { text: "термин", lang: "ru" }, { text: "контекст", lang: "ru" },
+  { text: "оригинал", lang: "ru" }, { text: "источник", lang: "ru" }, { text: "значение", lang: "ru" },
+  { text: "понятие", lang: "ru" }, { text: "выражение", lang: "ru" }, { text: "идиома", lang: "ru" },
+  { text: "метафора", lang: "ru" }, { text: "аллегория", lang: "ru" }, { text: "стиль", lang: "ru" },
+  { text: "жанр", lang: "ru" }, { text: "поэзия", lang: "ru" }, { text: "проза", lang: "ru" },
+  { text: "translate", lang: "en" }, { text: "language", lang: "en" }, { text: "words", lang: "en" },
+  { text: "meaning", lang: "en" }, { text: "text", lang: "en" }, { text: "speech", lang: "en" },
+  { text: "phrase", lang: "en" }, { text: "translator", lang: "en" }, { text: "interpret", lang: "en" },
+  { text: "context", lang: "en" }, { text: "style", lang: "en" }, { text: "idiom", lang: "en" },
+  { text: "traduire", lang: "fr" }, { text: "langue", lang: "fr" }, { text: "parole", lang: "fr" },
+  { text: "übersetzen", lang: "de" }, { text: "Sprache", lang: "de" }, { text: "Wort", lang: "de" },
+  { text: "traducir", lang: "es" }, { text: "idioma", lang: "es" }, { text: "palabra", lang: "es" },
+  { text: "tradurre", lang: "it" }, { text: "lingua", lang: "it" }, { text: "parola", lang: "it" },
+  { text: "traduzir", lang: "pt" }, { text: "língua", lang: "pt" }, { text: "palavra", lang: "pt" },
+  { text: "翻訳", lang: "ja" }, { text: "言葉", lang: "ja" }, { text: "言語", lang: "ja" },
+  { text: "번역", lang: "ko" }, { text: "언어", lang: "ko" }, { text: "말", lang: "ko" },
+  { text: "ترجمة", lang: "ar" }, { text: "لغة", lang: "ar" }, { text: "كلمة", lang: "ar" },
+  { text: "अनुवाद", lang: "hi" }, { text: "भाषा", lang: "hi" }, { text: "शब्द", lang: "hi" },
+  { text: "çeviri", lang: "tr" }, { text: "dil", lang: "tr" }, { text: "kelime", lang: "tr" },
+  { text: "μετάφραση", lang: "el" }, { text: "γλώσσα", lang: "el" }, { text: "λέξη", lang: "el" },
+  { text: "tłumaczenie", lang: "pl" }, { text: "język", lang: "pl" }, { text: "słowo", lang: "pl" },
+  { text: "překlad", lang: "cs" }, { text: "jazyk", lang: "cs" }, { text: "slovo", lang: "cs" },
+  { text: "vertalen", lang: "nl" }, { text: "taal", lang: "nl" }, { text: "woord", lang: "nl" },
+  { text: "översätta", lang: "sv" }, { text: "språk", lang: "sv" }, { text: "ord", lang: "sv" },
+  { text: "kääntää", lang: "fi" }, { text: "kieli", lang: "fi" }, { text: "sana", lang: "fi" },
+  { text: "oversætte", lang: "da" }, { text: "sprog", lang: "da" }, { text: "ord", lang: "da" },
+  { text: "oversette", lang: "no" }, { text: "språk", lang: "no" }, { text: "ord", lang: "no" },
+  { text: "fordítás", lang: "hu" }, { text: "nyelv", lang: "hu" }, { text: "szó", lang: "hu" },
+  { text: "traducere", lang: "ro" }, { text: "limbă", lang: "ro" }, { text: "cuvânt", lang: "ro" },
+  { text: "превод", lang: "bg" }, { text: "език", lang: "bg" }, { text: "дума", lang: "bg" },
+  { text: "переклад", lang: "uk" }, { text: "мова", lang: "uk" }, { text: "слово", lang: "uk" },
+  { text: "пераклад", lang: "be" }, { text: "мова", lang: "be" }, { text: "слова", lang: "be" },
+  { text: "თარგმანი", lang: "ka" }, { text: "ენა", lang: "ka" },
+  { text: "թարգմանություն", lang: "am" }, { text: "լեզու", lang: "am" },
+  { text: "תרגום", lang: "he" }, { text: "שפה", lang: "he" }, { text: "מילה", lang: "he" },
+  { text: "แปล", lang: "th" }, { text: "ภาษา", lang: "th" },
+  { text: "dịch", lang: "vi" }, { text: "ngôn ngữ", lang: "vi" },
+  { text: "terjemahan", lang: "id" }, { text: "bahasa", lang: "id" },
+  { text: "terjemah", lang: "ms" }, { text: "bahasa", lang: "ms" },
+  { text: "ترجمه", lang: "fa" }, { text: "زبان", lang: "fa" },
+  { text: "ترجمہ", lang: "ur" }, { text: "زبان", lang: "ur" },
+  { text: "অনুবাদ", lang: "bn" }, { text: "ভাষা", lang: "bn" },
+  { text: "மொழிபெயர்ப்பு", lang: "ta" }, { text: "மொழி", lang: "ta" },
+  { text: "tafsiri", lang: "sw" }, { text: "lugha", lang: "sw" },
+  { text: "vertaal", lang: "af" }, { text: "taal", lang: "af" },
+  { text: "translatio", lang: "la" }, { text: "lingua", lang: "la" }, { text: "verbum", lang: "la" },
+  { text: "traduki", lang: "eo" }, { text: "lingvo", lang: "eo" }, { text: "vorto", lang: "eo" },
+  { text: "cyfieithu", lang: "cy" }, { text: "iaith", lang: "cy" },
+  { text: "aistriúchán", lang: "ga" }, { text: "teanga", lang: "ga" },
+  { text: "itzulpen", lang: "eu" }, { text: "hizkuntza", lang: "eu" },
+  { text: "traducció", lang: "ca" }, { text: "llengua", lang: "ca" },
+  { text: "tradución", lang: "gl" }, { text: "lingua", lang: "gl" },
+  { text: "þýðing", lang: "is" }, { text: "tungumál", lang: "is" },
+  { text: "tulkojums", lang: "lv" }, { text: "valoda", lang: "lv" },
+  { text: "vertimas", lang: "lt" }, { text: "kalba", lang: "lt" },
+  { text: "tõlge", lang: "et" }, { text: "keel", lang: "et" },
+  { text: "preklad", lang: "sk" }, { text: "jazyk", lang: "sk" },
+  { text: "prevod", lang: "sl" }, { text: "jezik", lang: "sl" },
+  { text: "prijevod", lang: "hr" }, { text: "jezik", lang: "hr" },
+  { text: "превод", lang: "sr" }, { text: "језик", lang: "sr" },
+  { text: "превод", lang: "mk" }, { text: "јазик", lang: "mk" },
+  { text: "përkthim", lang: "sq" }, { text: "gjuhë", lang: "sq" },
+  { text: "traduzzjoni", lang: "mt" }, { text: "lingwa", lang: "mt" },
+  { text: "iwwersetzen", lang: "lb" }, { text: "sprooch", lang: "lb" },
+  { text: "oersette", lang: "fy" }, { text: "taal", lang: "fy" },
+  { text: "treiñ", lang: "br" }, { text: "yezh", lang: "br" },
+  { text: "traduccion", lang: "oc" }, { text: "lenga", lang: "oc" },
+  { text: "tradutzione", lang: "sc" }, { text: "limba", lang: "sc" },
+  { text: "treuslytherenna", lang: "kw" }, { text: "yeth", lang: "kw" },
+  { text: "ashlish", lang: "gv" }, { text: "çhengey", lang: "gv" },
+  { text: "eadar-theangachadh", lang: "gd" }, { text: "cànan", lang: "gd" }
+];
+
+const WORD_COUNT = 100;
+const words = [];
+
+function createWord() {
+  const wordData = flyingWords[Math.floor(Math.random() * flyingWords.length)];
+  return {
+    text: wordData.text,
+    x: -200,
+    y: Math.random() * bgCanvas.height,
+    speed: 0.3 + Math.random() * 1.2,
+    size: 14 + Math.random() * 22,
+    alpha: 0.08 + Math.random() * 0.25,
+    rotation: (Math.random() - 0.5) * 0.2
+  };
+}
+
+for (let i = 0; i < WORD_COUNT; i++) {
+  const word = createWord();
+  word.x = Math.random() * bgCanvas.width;
+  words.push(word);
+}
+
+let lastBgTime = 0;
+function animateBg(timestamp) {
+  if (timestamp - lastBgTime < 40) {
+    requestAnimationFrame(animateBg);
+    return;
+  }
+  lastBgTime = timestamp;
+  
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+  
+  words.forEach(word => {
+    word.x += word.speed;
+    word.y += Math.sin(word.x * 0.008) * 0.2;
+    
+    if (word.x > bgCanvas.width + 200) {
+      word.x = -200;
+      word.y = Math.random() * bgCanvas.height;
+    }
+    
+    bgCtx.save();
+    bgCtx.translate(word.x, word.y);
+    bgCtx.rotate(word.rotation);
+    bgCtx.font = `${word.size}px ${word.lang === 'zh' || word.lang === 'ja' || word.lang === 'ko' || word.lang === 'ar' || word.lang === 'he' || word.lang === 'fa' || word.lang === 'ur' || word.lang === 'hi' || word.lang === 'bn' || word.lang === 'ta' || word.lang === 'th' || word.lang === 'ka' || word.lang === 'am' ? 'serif' : 'sans-serif'}`;
+    bgCtx.fillStyle = `rgba(0, 245, 255, ${word.alpha})`;
+    bgCtx.shadowBlur = 6;
+    bgCtx.shadowColor = 'rgba(0, 245, 255, 0.4)';
+    bgCtx.fillText(word.text, 0, 0);
+    bgCtx.restore();
+  });
+  
+  bgCtx.shadowBlur = 0;
+  requestAnimationFrame(animateBg);
+}
+requestAnimationFrame(animateBg);
+
+function speakEnglishText(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.85;
+  utterance.pitch = 1.0;
+  window.speechSynthesis.speak(utterance);
+}
+
+let audioCtx = null;
+let correctBuffer = null;
+let incorrectBuffer = null;
+
+function initAudio() {
+  if (!audioCtx) {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      createSoundBuffers();
+    } catch (e) {}
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
+
+function createSoundBuffers() {
+  if (!audioCtx) return;
+  
+  const sampleRate = audioCtx.sampleRate;
+  const correctLength = 0.3 * sampleRate;
+  correctBuffer = audioCtx.createBuffer(1, correctLength, sampleRate);
+  const correctData = correctBuffer.getChannelData(0);
+  for (let i = 0; i < correctLength; i++) {
+    const t = i / sampleRate;
+    correctData[i] = Math.sin(2 * Math.PI * 523.25 * t) * Math.exp(-t * 10) * 0.3;
+  }
+  
+  const incorrectLength = 0.4 * sampleRate;
+  incorrectBuffer = audioCtx.createBuffer(1, incorrectLength, sampleRate);
+  const incorrectData = incorrectBuffer.getChannelData(0);
+  for (let i = 0; i < incorrectLength; i++) {
+    const t = i / sampleRate;
+    incorrectData[i] = Math.sin(2 * Math.PI * (440 - t * 200) * t) * Math.exp(-t * 8) * 0.3;
+  }
+}
+
+function playCorrectSound() {
+  if (!audioCtx || !correctBuffer) return;
+  const source = audioCtx.createBufferSource();
+  source.buffer = correctBuffer;
+  source.connect(audioCtx.destination);
+  source.start(0);
+}
+
+function playIncorrectSound() {
+  if (!audioCtx || !incorrectBuffer) return;
+  const source = audioCtx.createBufferSource();
+  source.buffer = incorrectBuffer;
+  source.connect(audioCtx.destination);
+  source.start(0);
+}
+
+let introVoicePlayed = false;
+
+function playIntroVoice() {
+  if (introVoicePlayed) return;
+  introVoicePlayed = true;
+  
+  const audio = document.getElementById('intro-voice');
+  if (audio) {
+    audio.pause();
+    audio.currentTime = 0;
+    setTimeout(() => {
+      audio.play().catch(() => { introVoicePlayed = false; });
+    }, 100);
+  }
+}
+
+function stopIntroVoice() {
+  const audio = document.getElementById('intro-voice');
+  if (audio) {
+    audio.pause();
+    audio.currentTime = 0;
+  }
+}
+
+const questions = [
+  {
+    question: "Кто из советских переводчиков присутствовал на Ялтинской конференции 1945 года и позже написал мемуары о работе со Сталиным?",
+    phrase: "Yalta Conference interpreter memoirs",
+    options: ["Валентин Бережков", "Максим Литвинов", "Андрей Громыко", "Вячеслав Молотов"],
+    correctIndex: 0,
+    explanation: "Валентин Бережков — выдающийся советский дипломат и переводчик, лично переводил Сталину на встречах с Черчиллем и Рузвельтом. Его мемуары «Я был переводчиком Сталина» стали классикой жанра."
+  },
+  {
+    question: "Какой русский поэт создал перевод «Гамлета», который до сих пор используется в театральных постановках?",
+    phrase: "Hamlet Russian theatre translation",
+    options: ["Борис Пастернак", "Александр Пушкин", "Сергей Есенин", "Владимир Маяковский"],
+    correctIndex: 0,
+    explanation: "Борис Пастернак перевёл «Гамлета» в 1939–1949 годах. Его перевод стал каноническим в русском театре — именно его текст использовали в легендарных постановках."
+  },
+  {
+    question: "Какой знаменитый древний артефакт помог учёным расшифровать египетские иероглифы?",
+    phrase: "Rosetta Stone hieroglyphs",
+    options: ["Розеттский камень", "Александрийская библиотека", "Манускрипт Войнича"],
+    correctIndex: 0,
+    explanation: "Розеттский камень — гранитная стела, найденная в 1799 году французскими солдатами в египетском городе Розетта (ныне Рашид). На ней высечен один и тот же текст на трёх языках: древнеегипетских иероглифах, демотическом письме и древнегреческом. Благодаря этому французский учёный Жан-Франсуа Шампольон в 1822 году смог расшифровать египетские иероглифы. Сейчас камень хранится в Британском музее в Лондоне."
+  },
+  {
+    question: "Сколько языков используется для официальных документов ООН?",
+    phrase: "UN official document languages",
+    options: ["6", "4", "5", "10"],
+    correctIndex: 0,
+    explanation: "В ООН шесть официальных языков: английский, арабский, испанский, китайский, русский и французский. Все документы ООН переводятся на эти языки."
+  },
+  {
+    question: "Как лучше всего перевести на русский английское выражение «It's not rocket science»?",
+    phrase: "It's not rocket science",
+    options: ["«Это не бином Ньютона»", "«Ракету из этого делать не надо»", "«Это не ракетная наука»", "«Это не наука запускать ракеты»"],
+    correctIndex: 0,
+    explanation: "«It's not rocket science» — популярное английское выражение, означающее «это не так уж сложно». Функциональный аналог в русском языке — «это не бином Ньютона», который передаёт тот же смысл и стилистическую окраску: интеллектуальную сложность, которая на самом деле невелика."
+  },
+  {
+    question: "Как в устном переводе называется режим, когда переводчик работает без аппаратуры, переводя речь шёпотом непосредственно на ухо слушателю?",
+    phrase: "Whispered interpreting",
+    options: ["Шушутаж", "Последовательный перевод", "Абзацный перевод", "Синхронный перевод"],
+    correctIndex: 0,
+    explanation: "Шушутаж (от фр. chuchotage — шёпот) — это вид устного перевода, при котором переводчик находится рядом со слушателем и переводит речь шёпотом, не используя специальную аппаратуру. Часто применяется на деловых встречах или небольших переговорах."
+  },
+  {
+    question: "Какой фильм дал миру выражение Lost in Translation?",
+    phrase: "Lost in Translation film",
+    options: ["«Переводчик»", "«Трудности перевода»", "«Последний перевод»"],
+    correctIndex: 1,
+    explanation: "«Lost in Translation» — оригинальное название фильма Софии Копполы 2003 года, известного в России как «Трудности перевода». Главные роли исполнили Билл Мюррей и Скарлетт Йоханссон. Фильм получил 4 премии «Оскар», в том числе за лучший оригинальный сценарий. Действие происходит в Токио, а название стало нарицательным для описания культурного недопонимания."
+  },
+  {
+    question: "Что такое CAT-инструменты в работе переводчика?",
+    phrase: "CAT tools for translators",
+    options: ["Профессиональные системы автоматизации перевода с памятью переводов, терминологическими базами и контролем качества", "Автоматические нейросетевые переводчики", "Словари для смартфонов", "Программы для перевода кошек"],
+    correctIndex: 0,
+    explanation: "CAT (Computer-Assisted Translation) — профессиональные системы, которые автоматизируют рутинные задачи переводчика: хранение ранее переведённых сегментов, управление терминологией, проверка согласованности, контроль качества и подсчёт слов. Коты, как ни странно, к этому не имеют отношения!"
+  },
+  {
+    question: "Какой русский перевод названия The Lord of the Rings был бы буквальным?",
+    phrase: "The Lord of the Rings literal translation",
+    options: ["«Повелитель колец»", "«Властелин колец»", "«Хозяин колец»", "«Господин колец»"],
+    correctIndex: 0,
+    explanation: "Слово «Lord» в английском языке означает «господин», «повелитель» или «властелин». Буквальный перевод — «Повелитель колец» или «Господин колец». Устоявшийся в русском языке литературный перевод — «Властелин колец» (в переводе В. Муравьёва и А. Кистяковского). Вариант «Хозяин колец» звучит слишком разговорно и не передаёт эпического характера произведения."
+  },
+  {
+    question: "Что переводчики называют «ложными друзьями переводчика»?",
+    phrase: "False friends of the translator",
+    options: [
+      "Слова, которые похожи в разных языках, но имеют разные значения",
+      "Коллеги, которые подставляют в дедлайн",
+      "Google-переводчик",
+      "Заказчики, которые после получения срочного перевода присылают обновлённую версию"
+    ],
+    correctIndex: 0,
+    explanation: "«Ложные друзья переводчика» (false friends) — это слова в разных языках, которые похожи по звучанию или написанию, но имеют совершенно разное значение. Классические примеры: англ. 'magazine' (журнал, а не магазин), 'sympathetic' (сочувствующий, а не симпатичный), 'accurate' (точный, а не аккуратный). Остальные варианты — это, конечно, тоже настоящие «ложные друзья» в жизни любого переводчика, но к лингвистическому термину они не относятся!"
+  }
+];
+
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+const screens = {
+  welcome: document.getElementById('welcome-screen'),
+  quiz: document.getElementById('quiz-screen'),
+  result: document.getElementById('result-screen')
+};
+
+const btnStart = document.getElementById('btn-start');
+const btnNext = document.getElementById('btn-next');
+const btnRestart = document.getElementById('btn-restart');
+const answersEl = document.getElementById('answers');
+const questionText = document.getElementById('question-text');
+const questionPhrase = document.getElementById('question-phrase');
+const explanationEl = document.getElementById('explanation');
+const progressLabel = document.getElementById('progress-label');
+const progressFill = document.getElementById('progress-fill');
+const scoreLabel = document.getElementById('score-label');
+const introVideo = document.getElementById('intro-video');
+const outroVideo = document.getElementById('outro-video');
+
+function showScreen(name) {
+  Object.values(screens).forEach(s => s.classList.remove('active'));
+  screens[name].classList.add('active');
+}
+
+function renderQuestion() {
+  const q = questions[currentQuestion];
+  answered = false;
+  progressLabel.textContent = `Вопрос ${currentQuestion + 1} / ${questions.length}`;
+  progressFill.style.width = `${(currentQuestion / questions.length) * 100}%`;
+  scoreLabel.textContent = `${score} / 10`;
+  questionText.textContent = q.question;
+  questionPhrase.textContent = `"${q.phrase}"`;
+  setTimeout(() => speakEnglishText(q.phrase), 200);
+  
+  const shuffledOptions = shuffleArray(q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.correctIndex })));
+  
+  answersEl.innerHTML = '';
+  shuffledOptions.forEach((item) => {
+    const card = document.createElement('button');
+    card.className = 'answer-card';
+    card.textContent = item.text;
+    card.addEventListener('click', () => handleAnswer(item.isCorrect, card, item.text));
+    answersEl.appendChild(card);
+  });
+  
+  explanationEl.classList.remove('show');
+  explanationEl.innerHTML = '';
+  btnNext.classList.remove('show');
+}
+
+questionPhrase.addEventListener('click', () => {
+  speakEnglishText(questions[currentQuestion].phrase);
+});
+
+function handleAnswer(isCorrect, card, selectedText) {
+  if (answered) return;
+  answered = true;
+  initAudio();
+  
+  const allCards = answersEl.querySelectorAll('.answer-card');
+  allCards.forEach(c => c.classList.add('disabled'));
+  
+  if (isCorrect) {
+    card.classList.add('correct');
+    score++;
+    scoreLabel.textContent = `${score} / 10`;
+    setTimeout(() => playCorrectSound(), 50);
+  } else {
+    card.classList.add('incorrect');
+    const q = questions[currentQuestion];
+    const correctText = q.options[q.correctIndex];
+    allCards.forEach(c => {
+      if (c.textContent === correctText) {
+        c.classList.add('correct');
+      }
+    });
+    setTimeout(() => playIncorrectSound(), 50);
+  }
+  
+  explanationEl.innerHTML = questions[currentQuestion].explanation;
+  explanationEl.classList.add('show');
+  btnNext.classList.add('show');
+}
+
+function goToNext() {
+  currentQuestion++;
+  if (currentQuestion >= questions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  const total = questions.length;
+  let title, text;
+  if (score <= 3) { 
+    title = "Ты начинающий переводчик"; 
+    text = "Профессиональный перевод — это марафон, а не спринт. У тебя впереди много интересных открытий!"; 
+  }
+  else if (score <= 6) { 
+    title = "Ты уверенный лингвист"; 
+    text = "Хороший результат! Ты знаешь основы индустрии и движешься в правильном направлении!"; 
+  }
+  else if (score <= 9) { 
+    title = "Ты хорошо ориентируешься в переводческой среде"; 
+    text = "Отличный результат! Ты свободно разбираешься в профессиональной терминологии и тонкостях профессии!"; 
+  }
+  else { 
+    title = "Ты senior-переводчик"; 
+    text = "Идеальный результат! Ты настоящий эксперт индустрии. Тебе по плечу любые задачи — от художественного перевода до дипломатической работы!"; 
+  }
+  document.getElementById('result-score').textContent = `${score} / ${total}`;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-text').textContent = text;
+  if (introVideo) { try { introVideo.pause(); } catch(e){} }
+  showScreen('result');
+  setTimeout(() => {
+    if (outroVideo) {
+      outroVideo.muted = true;
+      outroVideo.volume = 0;
+      outroVideo.play().catch(() => {});
+    }
+  }, 300);
+}
+
+function restartQuiz() {
+  currentQuestion = 0;
+  score = 0;
+  answered = false;
+  introVoicePlayed = false;
+  if (outroVideo) { try { outroVideo.pause(); outroVideo.currentTime = 0; } catch(e){} }
+  renderQuestion();
+  showScreen('quiz');
+}
+
+introVideo.addEventListener('canplaythrough', () => {
+  setTimeout(() => btnStart.classList.add('visible'), 1000);
+});
+setTimeout(() => btnStart.classList.add('visible'), 3000);
+
+introVideo.addEventListener('ended', () => {
+  playIntroVoice();
+});
+
+function enableSound() {
+  if (introVideo && introVideo.muted) {
+    introVideo.muted = false;
+    introVideo.volume = 1.0;
+    introVideo.play().catch(() => {});
+  }
+  initAudio();
+}
+
+document.addEventListener('click', enableSound, { once: true });
+document.addEventListener('touchstart', enableSound, { once: true });
+document.addEventListener('touchend', enableSound, { once: true });
+document.addEventListener('mousedown', enableSound, { once: true });
+
+btnStart.addEventListener('click', () => {
+  initAudio();
+  enableSound();
+  if (introVideo) { try { introVideo.pause(); } catch(e){} }
+  stopIntroVoice();
+  renderQuestion();
+  showScreen('quiz');
+});
+
+btnNext.addEventListener('click', () => goToNext());
+btnRestart.addEventListener('click', () => restartQuiz());
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    if (introVideo) {
+      introVideo.play().catch(() => {
+        document.addEventListener('touchstart', () => {
+          introVideo.play().catch(() => {});
+        }, { once: true });
+      });
+    }
+  }, 100);
+});
+
+document.addEventListener('touchstart', () => {
+  initAudio();
+}, { once: true });
+
+document.addEventListener('click', () => {
+  initAudio();
+}, { once: true });
+</script>
+
+</body>
+</html>
